@@ -7,8 +7,7 @@
 #include <string.h>
 #include <ctype.h>
 
-int tipo_de_cliente,codigo;
-int codigo_do_cliente;
+
 typedef struct conta{
 	int numero_conta,codigo_cliente;
 	float saldo;
@@ -26,6 +25,12 @@ typedef struct no{
 	Pessoa pessoa;
 	struct no *proximo;
 }No;
+
+Pessoa cliente,cliente1;
+No *encontrado,*minha_lista=NULL;
+int tipo_de_cliente,codigo;
+int codigo_do_cliente;
+
 void inserir_no_inicio(No **lista, Pessoa p){
 	No *novo=malloc(sizeof(No));
 	if(novo){
@@ -68,6 +73,19 @@ No* buscar(No **lista, int codigo){
 	}
 	return no;
 }
+
+No* buscar_numero_da_conta(No **lista, int codigo){
+	No *aux,*no=NULL;
+	aux=*lista;
+	while(aux && aux->pessoa.conta_do_cliente.numero_conta!=codigo){
+		aux=aux->proximo;
+	}
+	if(aux){
+		no=aux;
+	}
+	return no;
+}
+
 void imprimir(No *no){
 	printf("\n\tLista:");
 	while(no){
@@ -191,7 +209,7 @@ else{
         		strcpy(p->NIF,auxiliar);
 				}
 				else{
-			printf("NIF invalido\n");
+			printf("Bilhete invalido\n");
 			return false;
 				}
 				break;	
@@ -252,10 +270,120 @@ else{
 	
 }
  
+ bool depositar(int num_da_conta, int valor){
+ 	
+	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta);
+	 if(encontrado){
+	 	if(valor>0){
+	 	cliente=encontrado->pessoa;
+	 cliente.conta_do_cliente.saldo=cliente.conta_do_cliente.saldo+valor;
+	 return true;	
+		 }
+	 	
+	 }
+	 return false;
+	 
+ }
+ bool levantar(int num_da_conta, int valor){
+ 	
+	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta);
+	 if(encontrado){
+	 	if(valor>0){
+	 		if(cliente.conta_do_cliente.saldo>valor){
+	 			cliente=encontrado->pessoa;
+	 			cliente.conta_do_cliente.saldo=cliente.conta_do_cliente.saldo-valor;
+	 				return true;	
+			 }
+	 	
+		 }
+	 	
+	 }
+	 return false;
+	 
+ }
+ 
+ 
+ float consultar_saldo(int num_da_conta, int valor){
+ 	
+	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta);
+	 if(encontrado){
+	 	cliente=encontrado->pessoa;
+	 return cliente.conta_do_cliente.saldo; 
+	 }
+	 
+ }
+ 
+ bool transferir(int num_da_conta_de_origem,int num_da_conta_de_destino ,int valor){
+ 		
+	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta_de_origem);
+	 if(encontrado){
+	 	if(valor>0){
+	 	cliente=encontrado->pessoa;
+	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta_de_destino);
+	 if(encontrado){
+	 	if(valor>0){
+	 	cliente1=encontrado->pessoa;
+	 cliente1.conta_do_cliente.saldo=cliente.conta_do_cliente.saldo+valor;
+	 cliente.conta_do_cliente.saldo=cliente.conta_do_cliente.saldo-valor;
+	 return true;	
+		 }
+	 	
+	 }
+	 
+	 }
+	 }
+	 return false;
+	 
+ }
+ bool actualizar_dados(Pessoa p,int codigo){
+ 	int telefone,opcao;
+ 	char nbn[40];
+ 	printf("Para actualizar digite:\t 1-Nome\t2-Numero de telefone\t3-BI\t:");
+ 	
+ 	scanf("%s",&nbn);
+	if(evitar_erro(nbn)>0){
+		opcao=atoi(nbn);
+	}
+else{
+	opcao=43;
+	}
+	switch(opcao){
+		case 1:
+		fgets(nbn,sizeof(nbn),stdin);
+		strcpy(p.nome,nbn);
+		return true;
+		case 2:
+			scanf("%s",&nbn);
+		if(evitar_erro(nbn)>0){
+		if(validar_telefone(nbn)){
+			p.telefone=atoi(nbn);
+			return true;
+		}
+	
+	}
+	return false;
+	case 3:
+		fgets(nbn,sizeof(nbn),stdin);
+		if(validar_bilhete(nbn)){
+		strcpy(p.BI,nbn);
+		return true	;
+		}
+		case 4:
+			fgets(nbn,sizeof(nbn),stdin);
+		if(validar_bilhete(nbn)){
+		strcpy(p.NIF,nbn);
+		return true;
+	}
+	default:
+	printf("Erro! opcao errada\n");
+	return false;	
+			
+	}}
+ 
+ 
 int main(int argc, char *argv[]) {
-	No *encontrado,*minha_lista=NULL;
-	Pessoa cliente;
-	int opcao,sair=0,tipo_de_conta;
+	
+	int opcao,sair=0,tipo_de_conta,valor,valor2,num_da_conta;
 	char auxiliar[16];
 	do{
 		menu();
@@ -302,13 +430,97 @@ int main(int argc, char *argv[]) {
 	 			if(evitar_erro(auxiliar)>0){
 	 					tipo_de_conta=atoi(auxiliar);
 	 					getchar();
-	 					}
+				}
 		 		else{
 	 				tipo_de_conta=0;
 	 			}
     			abertura_de_conta(&cliente,tipo_de_conta);
 			}
     			break;
+    			case 4:
+    				printf("Digite o numero de conta\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		opcao=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		opcao=0;
+	 		}
+	 		printf("Digite o valor\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		valor=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		valor=0;
+	 		}
+    				if(depositar(opcao,valor)){
+    					
+					}
+    				printf("Deposito efectuado com sucesso\n");
+    				break;
+    				case 5:
+    					
+    				printf("Digite o numero de conta\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		opcao=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		opcao=0;
+	 		}
+	 		printf("Digite o valor\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		valor=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		valor=0;
+	 		}
+    				if(depositar(opcao,valor))
+    				printf("Levantamento efectuado com sucesso\n");
+    					levantar(opcao,valor);
+    					break;
+    					
+    					case 6:
+    						
+    				printf("Digite o numero de conta\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		opcao=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		opcao=0;
+	 		}
+	 		printf("Digite o valor\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		valor=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		valor=0;
+	 		}
+    					
+    				printf("Digite o numero de conta de destino\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		num_da_conta=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		num_da_conta=0;
+	 		}
+				transferir(opcao,num_da_conta,valor);
+    					break;
+    					
+    					case 7:
+    						
 			case 9:
 				liberar_lista(minha_lista);
 				sair=1;
