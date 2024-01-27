@@ -86,7 +86,7 @@ No* buscar_numero_da_conta(No **lista, int codigo){
 	return no;
 }
 
-void imprimir(No *no){
+void listar_cliente(No *no){
 	printf("\n\tLista:");
 	while(no){
 		printf("____________________________________");
@@ -381,23 +381,21 @@ else{
 			
 	}}
  
- void criar_ficheiro(const char *arqivo){
- 	FILE *arquivo=fopen(arqivo,"w");
- 	if(arquivo!=NULL){
- 		fclose(arquivo);
- 		printf("arquivo criado com sucesso:%s\n\n",arqivo);
-	 }else{
-	 	printf("Erro ao criar arquivo\n");
-	 }
+ 
 	 
- }
+ 
  void copia_de_seguranca(const char *arqivo, No **lista){
  	No *aux;
  	aux=*lista;
 	 FILE *arquivo=fopen(arqivo,"w");
  	if(arquivo!=NULL){
  		while(aux!=NULL){
- 			fprintf(arquivo,"%s\n",aux);
+ 			fprintf(arquivo,"%s\n",aux->pessoa.nome);
+ 			fprintf(arquivo,"%s\n",aux->pessoa.BI);
+ 			fprintf(arquivo,"%d\n",aux->pessoa.codigo);
+ 			fprintf(arquivo,"%d\n",aux->pessoa.telefone);
+ 			fprintf(arquivo,"%s\n",aux->pessoa.conta_do_cliente.numero_conta);
+ 			fprintf(arquivo,"%f\n",aux->pessoa.conta_do_cliente.saldo);
  					aux=aux->proximo;
 		 }
  		fclose(arquivo);
@@ -419,7 +417,13 @@ void restaurar_copia(const char *arqivo, No **lista){
 	 }
 }
 int main(int argc, char *argv[]) {
-	criar_ficheiro("backup_Isaf.txt");
+	FILE *arquivo=fopen("backup_isaf.txt","w");
+ 	if(arquivo!=NULL){
+ 		fclose(arquivo);
+ 		printf("arquivo criado com sucesso:\n\n");
+	 }else{
+	 	printf("Erro ao criar arquivo\n");
+	 }
 	int opcao,sair=0,tipo_de_conta,valor,valor2,num_da_conta;
 	char auxiliar[16];
 	do{
@@ -444,7 +448,7 @@ int main(int argc, char *argv[]) {
 				}
 				break;
 			case 2:
-				imprimir(minha_lista);
+				listar_cliente(minha_lista);
 
 				break;
     		case 3:
@@ -471,6 +475,7 @@ int main(int argc, char *argv[]) {
 	 				tipo_de_conta=0;
 	 			}
     			abertura_de_conta(&cliente,tipo_de_conta);
+    			copia_de_seguranca("backup_isaf.txt",&minha_lista);
 			}
     			break;
     			case 4:
