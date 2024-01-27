@@ -262,7 +262,7 @@ else{
 				
 	}
 	if(p->conta_do_cliente.numero_conta==0){
-	p->conta_do_cliente.numero_conta=gerar_numero_da_conta();
+	
 	strcpy(p->conta_do_cliente.estado,"Ativo");
 	return true;	
 	}else{
@@ -474,7 +474,9 @@ int main(int argc, char *argv[]) {
 		 		else{
 	 				tipo_de_conta=0;
 	 			}
+	 			cliente.conta_do_cliente.numero_conta=gerar_numero_da_conta();
     			abertura_de_conta(&cliente,tipo_de_conta);
+    			inserir_no_fim(&minha_lista, cliente);
     			copia_de_seguranca("backup_isaf.txt",&minha_lista);
 			}
     			break;
