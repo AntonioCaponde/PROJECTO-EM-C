@@ -128,6 +128,7 @@ int gerar_numero_da_conta(){
 	int numero_fixo=2200;
 	int numero_aleatorio=(rand()%100);
 	numero=numero_fixo*100+numero_aleatorio;
+    return numero;
 }
 bool validar_bilhete(char *numero_bilhete){
 	int tamanho=strlen(numero_bilhete);
@@ -240,23 +241,23 @@ else{
 	}
 	
 	bool abertura_de_conta(Pessoa *p,int tipo_de_conta){
-	switch(tipo_de_cliente){
-		printf("codigo %d",p->codigo);
+	switch(tipo_de_conta){
 		case 1:
-			if(p->BI==NULL){
+			if(strlen(p->BI)==0){
 				printf("Nao e uma conta individual\n");
 				return false;
 			}
 			break;
 		
 		case 2:
-			if(p->NIF==NULL){
+			if(strlen(p->NIF)==0){
 				printf("Nao e uma conta empresa\n");
 				return false;
 			}
 			break;
 		default:
 			printf("Erro\n escolha entre 1 e 2\n");
+            return false;
 				
 				
 	}
@@ -303,7 +304,7 @@ else{
  }
  
  
- float consultar_saldo(int num_da_conta, int valor){
+ float consultar_saldo(int num_da_conta){
  	
 	 encontrado=buscar_numero_da_conta(&minha_lista,num_da_conta);
 	 if(encontrado){
@@ -380,9 +381,45 @@ else{
 			
 	}}
  
- 
+ void criar_ficheiro(const char *arqivo){
+ 	FILE *arquivo=fopen(arqivo,"w");
+ 	if(arquivo!=NULL){
+ 		fclose(arquivo);
+ 		printf("arquivo criado com sucesso:%s\n\n",arqivo);
+	 }else{
+	 	printf("Erro ao criar arquivo\n");
+	 }
+	 
+ }
+ void copia_de_seguranca(const char *arqivo, No **lista){
+ 	No *aux;
+ 	aux=*lista;
+	 FILE *arquivo=fopen(arqivo,"w");
+ 	if(arquivo!=NULL){
+ 		while(aux!=NULL){
+ 			fprintf(arquivo,"%s\n",aux);
+ 					aux=aux->proximo;
+		 }
+ 		fclose(arquivo);
+ 		printf("copia feita com sucesso \n");
+ }else{
+	 	printf("Erro ao abrir  arquivo\n");
+	 }
+}
+void restaurar_copia(const char *arqivo, No **lista){
+ 	No *aux;
+	 FILE *arquivo=fopen(arqivo,"w");
+ 	if(arquivo!=NULL){
+ 		while(fscanf(arquivo,"%d",& (aux->pessoa))!=EOF){
+		 }
+ 		fclose(arquivo);
+ 		printf("copia feita com sucesso \n");
+ }else{
+	 	printf("Erro ao abrir  arquivo\n");
+	 }
+}
 int main(int argc, char *argv[]) {
-	
+	criar_ficheiro("backup_Isaf.txt");
 	int opcao,sair=0,tipo_de_conta,valor,valor2,num_da_conta;
 	char auxiliar[16];
 	do{
@@ -415,7 +452,7 @@ int main(int argc, char *argv[]) {
 				scanf("%s",&auxiliar);
 	 	if(evitar_erro(auxiliar)>0){
 	 		opcao=atoi(auxiliar);
-	 		getchar();
+	 		
 	 	}
 		 else{
 	 		opcao=0;
@@ -429,7 +466,6 @@ int main(int argc, char *argv[]) {
     			scanf("%s",&auxiliar);
 	 			if(evitar_erro(auxiliar)>0){
 	 					tipo_de_conta=atoi(auxiliar);
-	 					getchar();
 				}
 		 		else{
 	 				tipo_de_conta=0;
@@ -461,7 +497,7 @@ int main(int argc, char *argv[]) {
 					}
     				printf("Deposito efectuado com sucesso\n");
     				break;
-    				case 5:
+    	case 5:
     					
     				printf("Digite o numero de conta\n:");
 				scanf("%s",&auxiliar);
@@ -486,7 +522,22 @@ int main(int argc, char *argv[]) {
     					levantar(opcao,valor);
     					break;
     					
-    					case 6:
+    	case 6:
+    		printf("Digite o numero de conta\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		opcao=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		opcao=0;
+	 		}
+    				printf("%.2f",consultar_saldo(opcao));
+    				break;
+    					
+    					
+    					
+    					case 7:
     						
     				printf("Digite o numero de conta\n:");
 				scanf("%s",&auxiliar);
@@ -519,8 +570,23 @@ int main(int argc, char *argv[]) {
 				transferir(opcao,num_da_conta,valor);
     					break;
     					
-    					case 7:
-    						
+    					case 8:
+    			printf("Digite o codigo de Cliente\n:");
+				scanf("%s",&auxiliar);
+	 	if(evitar_erro(auxiliar)>0){
+	 		opcao=atoi(auxiliar);
+	 		getchar();
+	 	}
+		 else{
+	 		opcao=0;
+	 		}
+
+    		encontrado=buscar(&minha_lista,opcao);
+    		if(encontrado){
+    			cliente=encontrado->pessoa;
+    			printf("encontrado\n%d",cliente.codigo);
+    			actualizar_dados(cliente,opcao);
+						}
 			case 9:
 				liberar_lista(minha_lista);
 				sair=1;
@@ -533,3 +599,4 @@ int main(int argc, char *argv[]) {
 	
 	}while(sair!=1);
 }
+    
